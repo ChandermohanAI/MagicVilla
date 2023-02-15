@@ -30,8 +30,7 @@ namespace MagicVilla.Controllers
             else
             {
                 VillaStore.villaList.Add(v);
-                var resourceUrl = Request.Path.ToString() + '/' + v.Id;
-                return Created(resourceUrl, v);
+                return Ok(v);
             }
         }
 
@@ -55,14 +54,14 @@ namespace MagicVilla.Controllers
     [Route("{Id}")]
     public ActionResult Delete(int Id)
     {
-        var superheroItem = VillaStore.villaList.Find(x => x.Id == Id);
-        if (superheroItem == null)
+        var existingVilla = VillaStore.villaList.Find(x => x.Id == Id);
+        if (existingVilla == null)
         {
             return NotFound();
         }
         else
         {
-            VillaStore.villaList.Remove(superheroItem);
+            VillaStore.villaList.Remove(existingVilla);
             return NoContent();
         }
     }
