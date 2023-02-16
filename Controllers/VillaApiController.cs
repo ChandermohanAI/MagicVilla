@@ -1,4 +1,5 @@
 using MagicVilla.Data;
+using MagicVilla.Logging;
 using MagicVilla.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,21 +9,31 @@ namespace MagicVilla.Controllers
     [ApiController]
     public class VillaApiController : ControllerBase
     {
+        private readonly Ilogging _logger;
+
+        public VillaApiController(Ilogging logger){
+            _logger = logger;
+        }
+
+        private readonly ApplicationDbContext _db;
+        public VillaApiController(ApplicationDbContext db){
+            _db = db;
+        }
         [HttpGet]
         public ActionResult<IEnumerable<VillaDTO>> GetVillas(){
-            return Ok(VillaStore.villaList);
+            return Ok(_db.Villas);
             
         }
 
         [HttpGet("id")]
         public ActionResult<VillaDTO> GetVilla(int id){
-            return Ok(VillaStore.villaList.FirstOrDefault(u=>u.Id==id));
+            return Ok(_db.Villas.FirstOrDefault(u=>u.Id==id));
         }
 
 
         [HttpPost]
         public ActionResult<VillaDTO>  _Create(VillaDTO v){
-            var existingVilla = VillaStore.villaList.Find(x => x.Id == v.Id);
+            var existingVilla =_db.Villas.Find(x => x.Id == v.Id);
             if (existingVilla != null)
             {
                 return Conflict("Cannot create the Id because it already exists.");
