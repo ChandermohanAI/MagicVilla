@@ -1,5 +1,6 @@
 using MagicVilla.Data;
 using MagicVilla.Logging;
+using MagicVilla.Model;
 using MagicVilla.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +10,6 @@ namespace MagicVilla.Controllers
     [ApiController]
     public class VillaApiController : ControllerBase
     {
-        private readonly Ilogging _logger;
-
-        public VillaApiController(Ilogging logger){
-            _logger = logger;
-        }
 
         private readonly ApplicationDbContext _db;
         public VillaApiController(ApplicationDbContext db){
@@ -32,32 +28,50 @@ namespace MagicVilla.Controllers
 
 
         [HttpPost]
-        public ActionResult<VillaDTO>  _Create(VillaDTO v){
-            var existingVilla =_db.Villas.Find(x => x.Id == v.Id);
+        public ActionResult<VillaDTO>  _Create(VillaCreateDTO v){
+            var existingVilla =_db.Villas.FirstOrDefault(x => x.Name == v.Name);
             if (existingVilla != null)
             {
                 return Conflict("Cannot create the Id because it already exists.");
             }
-            else
-            {
-                VillaStore.villaList.Add(v);
-                return Ok(v);
-            }
+            Villa model = new Villa(){
+                Amenityy = v.Amenityy,
+                Details = v.Details,
+                ImageUrl = v.ImageUrl,
+                Name = v.Name,
+                Ocuupancy = v.Ocuupancy,
+                Rate = v.Rate,
+                Sqft = v.Sqft
+                };
+                _db.Villas.Add(model);
+                _db.SaveChanges();
+
+                return Ok(model);
         }
 
         [HttpPut]
-        public ActionResult Put(VillaDTO v)
+        public ActionResult Put(VillaUpdateDTO v)
         {
-            var existingVilla = VillaStore.villaList.Find(x => x.Id == v.Id);
-            if (existingVilla == null)
+            var existingVilla = _db.Villas.FirstOrDefault(x => x.Id == v.Id);
+            if (v == null)
             {
-                return BadRequest("Cannot update a non existing term.");
-            } 
-            else
-            {
-                existingVilla.Name = v.Name;
-                return Ok();
+                return BadRequest("Cannot update, Enter valid Data");
             }
+            Villa model = new Villa(){
+                Amenityy = v.Amenityy,
+                Details = v.Details,
+                Id = v.Id,
+                ImageUrl = v.ImageUrl,
+                Name = v.Name,
+                Ocuupancy = v.Ocuupancy,
+                Rate = v.Rate,
+                Sqft = v.Sqft
+                };
+                _db.Villas.Add(model);
+                _db.SaveChanges();
+
+                return Ok(model); 
+            
         }
 
 
@@ -65,14 +79,15 @@ namespace MagicVilla.Controllers
     [Route("{Id}")]
     public ActionResult Delete(int Id)
     {
-        var existingVilla = VillaStore.villaList.Find(x => x.Id == Id);
+        var existingVilla = _db.Villas.FirstOrDefault(x => x.Id == Id);
         if (existingVilla == null)
         {
             return NotFound();
         }
         else
         {
-            VillaStore.villaList.Remove(existingVilla);
+            _db.Villas.Remove(existingVilla);
+            _db.SaveChanges();
             return NoContent();
         }
     }
