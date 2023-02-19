@@ -2,6 +2,8 @@ using MagicVilla;
 using MagicVilla.Data;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MagicVilla.Repository;
+using MagicVilla.Repository.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(option =>{
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddScoped<IVillaRepository,VillaRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

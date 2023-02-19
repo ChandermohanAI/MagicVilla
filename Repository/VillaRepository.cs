@@ -10,48 +10,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MagicVilla.Repository
 {
-    public class VillaRepository : IVillaRepository
+    public class VillaRepository : Repository<Villa>, IVillaRepository
     {
         private readonly ApplicationDbContext _db;
        
-        public VillaRepository(ApplicationDbContext db){
+        public VillaRepository(ApplicationDbContext db) :base(db)
+        {
             _db = db;
             
         }
-        public async Task Create(Villa entity)
-        {
-            await _db.Villas.AddAsync(entity);
-            await Save();
-        }
 
-        public async Task<Villa> Get(Expression<Func<Villa,bool>> filter = null)
+        public async Task Update(Villa entity)
         {
-            IQueryable<Villa> query =_db.Villas;
-            if(query !=null){
-                query = query.Where(filter);
-            }
-            return await query.FirstOrDefaultAsync();
-        }
-
-        public async Task<List<Villa>> GetAll(Expression<Func<Villa,bool>> filter = null)
-        {
-            IQueryable<Villa> query =_db.Villas;
-            if(query !=null){
-                
-                query = query.Where(filter);
-            }
-            return await query.ToListAsync();
-
-        }
-
-        public async Task Remove(Villa entity)
-        {
-            _db.Villas.Remove(entity);
-            await Save();
-        }
-
-        public async Task Save()
-        {
+            _db.Villas.Update(entity);
             await _db.SaveChangesAsync();
         }
     }
