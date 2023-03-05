@@ -1,12 +1,9 @@
 using System.Net;
 using AutoMapper;
-using MagicVilla.Data;
-using MagicVilla.Logging;
 using MagicVilla.Model;
 using MagicVilla.Model.DTO;
 using MagicVilla.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MagicVilla.Controllers
 {
@@ -23,6 +20,8 @@ namespace MagicVilla.Controllers
             _mapper = mapper;
             this._response = new();
         }
+
+        
         [HttpGet]
         public async Task<ActionResult<APIResponse>> GetVillas(){
 
