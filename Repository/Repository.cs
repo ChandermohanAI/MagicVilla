@@ -20,13 +20,13 @@ namespace MagicVilla.Repository
             this.dbSet=_db.Set<T>();
         }
 
-        public async Task Create(T entity)
+        public async Task CreateAsync(T entity)
         {
             await dbSet.AddAsync(entity);
-            await Save();
+            await SaveAsync();
         }
 
-        public async Task<T> Get(Expression<Func<T, bool>> filter = null)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null)
         {
             
             IQueryable<T> query =dbSet;
@@ -36,7 +36,7 @@ namespace MagicVilla.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<T>> GetAll(Expression<Func<T, bool>>? filter = null)
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
         {
             
             IQueryable<T> query =dbSet;
@@ -48,13 +48,13 @@ namespace MagicVilla.Repository
 
         }
 
-        public async Task Remove(T entity)
+        public async Task RemoveAsync(T entity)
         {
             dbSet.Remove(entity);
-            await Save();
+            await SaveAsync();
         }
 
-        public async Task Save()
+        public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
         }

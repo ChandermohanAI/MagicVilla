@@ -20,10 +20,11 @@ namespace MagicVilla.Repository
             
         }
 
-        public async Task Update(Villa entity)
+        public async Task<Villa> UpdateAsync(Villa entity)
         {
             _db.Villas.Update(entity);
             await _db.SaveChangesAsync();
+            return entity;
         }
     }
 }

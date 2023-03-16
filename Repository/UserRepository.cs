@@ -41,7 +41,11 @@ namespace MagicVilla.Repository
 
             if(user==null)
             {
-                return null;
+                return new LoginResponseDTO()
+                {
+                    Token = "",
+                    User = null
+                };
             }
 
             // if user exists
@@ -71,7 +75,7 @@ namespace MagicVilla.Repository
 
         public async Task<LocalUser> Register(RegisterationRequestDTO registerationRequestDTO)
         {
-            LocalUser user = new LocalUser()
+            LocalUser user = new()
             {
                 UserName = registerationRequestDTO.UserName,
                 Password = registerationRequestDTO.Password,

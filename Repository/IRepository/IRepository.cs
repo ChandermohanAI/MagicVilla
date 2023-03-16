@@ -9,10 +9,10 @@ namespace MagicVilla.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {
-        Task<List<T>> GetAll(Expression<Func<T,bool>> filter = null);
-        Task<T> Get(Expression<Func<T,bool>>? filter = null);
-        Task Create(T entity);
-        Task Remove(T entity);
-        Task Save(); 
+        Task<List<T>> GetAllAsync(Expression<Func<T,bool>> filter = null);
+        Task<T> GetAsync(Expression<Func<T,bool>>? filter = null);
+        Task CreateAsync(T entity);
+        Task RemoveAsync(T entity);
+        Task SaveAsync(); 
     }
 }

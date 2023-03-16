@@ -25,17 +25,17 @@ namespace MagicVilla.Controllers
         [HttpGet]
         public async Task<ActionResult<APIResponse>> GetVillas(){
 
-            IEnumerable<Villa> villaList = await _dbVilla.GetAll();
+            IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
             _response.Result = _mapper.Map<List<VillaDTO>>(villaList);
             _response.StatusCode = HttpStatusCode.OK;
             return Ok(_response);
             
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id:int}", Name = "GetVilla")]
         public async Task<ActionResult<APIResponse>> GetVilla(int id){
         
-            var villa = await _dbVilla.Get(u=>u.Id==id);
+            var villa = await _dbVilla.GetAsync(u=>u.Id==id);
             if(villa==null){
                 return NotFound();
             }
@@ -47,8 +47,8 @@ namespace MagicVilla.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<APIResponse>>  _Create(VillaCreateDTO v){
-            var existingVilla =await _dbVilla.Get(x => x.Name == v.Name);
+        public async Task<ActionResult<APIResponse>> _Create([FromBody] VillaCreateDTO v){
+            var existingVilla =await _dbVilla.GetAsync(x => x.Name == v.Name);
             if (existingVilla != null)
             {
                 return Conflict("Cannot create the Id because it already exists.");
@@ -64,16 +64,16 @@ namespace MagicVilla.Controllers
             //     Rate = v.Rate,
             //     Sqft = v.Sqft
             //     };
-            await _dbVilla.Create(model);
+            await _dbVilla.CreateAsync(model);
             _response.Result = _mapper.Map<VillaDTO>(model);
             _response.StatusCode = HttpStatusCode.OK;
-            return Ok(_response);
+            return CreatedAtRoute("GetVilla", new { id = model.Id }, _response);
         }
 
-        [HttpPut]
+        [HttpPut("{id:int}", Name = "UpdateVilla")]
         public async Task<ActionResult<APIResponse>> Put(VillaUpdateDTO v)
         {
-            var existingVilla = await _dbVilla.Get(x => x.Id == v.Id);
+            var existingVilla = await _dbVilla.GetAsync(x => x.Id == v.Id);
             if (v == null)
             {
                 return BadRequest("Cannot update, Enter valid Data");
@@ -89,7 +89,7 @@ namespace MagicVilla.Controllers
             //     Rate = v.Rate,
             //     Sqft = v.Sqft
             //     };
-            await _dbVilla.Update(model);
+            await _dbVilla.UpdateAsync(model);
             _response.Result = _mapper.Map<VillaDTO>(model);
             _response.StatusCode = HttpStatusCode.NoContent;
             return Ok(_response);
@@ -97,23 +97,22 @@ namespace MagicVilla.Controllers
         }
 
 
-    [HttpDelete]
-    [Route("{Id}")]
-    public async Task<ActionResult<APIResponse>> Delete(int Id)
-    {
-        var existingVilla = await _dbVilla.Get(x => x.Id == Id);
-        if (existingVilla == null)
+        [HttpDelete("{id:int}", Name = "DeleteVilla")]
+        public async Task<ActionResult<APIResponse>> Delete(int id)
         {
-            return NotFound();
+            var existingVilla = await _dbVilla.GetAsync(x => x.Id == id);
+            if (existingVilla == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                await _dbVilla.RemoveAsync(existingVilla);
+                _response.Result = _mapper.Map<VillaDTO>(existingVilla);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                return Ok(_response);
+            }
         }
-        else
-        {
-            await _dbVilla.Remove(existingVilla);
-            _response.Result = _mapper.Map<VillaDTO>(existingVilla);
-            _response.StatusCode = HttpStatusCode.NoContent;
-            return Ok(_response);
-            
-        }
-    }
+
 }
 }

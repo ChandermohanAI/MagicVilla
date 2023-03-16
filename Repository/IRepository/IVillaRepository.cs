@@ -9,7 +9,7 @@ namespace MagicVilla.Repository.IRepository
 {
     public interface IVillaRepository : IRepository<Villa>
     {
-        Task Update(Villa entity);
+        Task<Villa> UpdateAsync(Villa entity);
          
     }
 }

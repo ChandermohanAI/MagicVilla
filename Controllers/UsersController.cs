@@ -1,27 +1,64 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
+using MagicVilla.Model;
+using MagicVilla.Model.DTO;
+using MagicVilla.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace MagicVilla.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/UsersAuth")]
+    [ApiController]
     public class UsersController : Controller
     {
-        private readonly ILogger<UsersController> _logger;
-
-        public IActionResult Index()
+        private readonly IUserRepository _userRepo;
+        protected APIResponse _response;
+        public UsersController(IUserRepository userRepo)
         {
-            return View();
+            _userRepo = userRepo;
+            this._response = new();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
-            return View("Error!");
+            var loginResponse = await _userRepo.Login(model); 
+            if(loginResponse.User==null || string.IsNullOrEmpty(loginResponse.Token))
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username or password is incorrect");
+                return BadRequest(_response);
+            }
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            _response.Result = loginResponse;
+            return Ok(_response);
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO model)
+        {
+            bool ifUserNameUnique = _userRepo.IsUniqueUser(model.UserName);
+            if (!ifUserNameUnique)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username already exists");
+                return BadRequest(_response);
+            }
+
+            var user = await _userRepo.Register(model);
+            if (user == null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Error while registering");
+                return BadRequest(_response);
+            }
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            return Ok(_response);
+        }
+
     }
 }
