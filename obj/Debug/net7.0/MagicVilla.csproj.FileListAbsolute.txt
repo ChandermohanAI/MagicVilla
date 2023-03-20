@@ -80,3 +80,4 @@ C:\MagicVilla\bin\Debug\net7.0\System.Net.Http.Formatting.dll
 C:\MagicVilla\bin\Debug\net7.0\System.Web.Http.dll
 C:\MagicVilla\bin\Debug\net7.0\Newtonsoft.Json.dll
 C:\MagicVilla\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
+C:\MagicVilla\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

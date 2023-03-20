@@ -3,6 +3,7 @@ using AutoMapper;
 using MagicVilla.Model;
 using MagicVilla.Model.DTO;
 using MagicVilla.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicVilla.Controllers
@@ -23,6 +24,7 @@ namespace MagicVilla.Controllers
 
         
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<APIResponse>> GetVillas(){
 
             IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
@@ -47,6 +49,7 @@ namespace MagicVilla.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult<APIResponse>> _Create([FromBody] VillaCreateDTO v){
             var existingVilla =await _dbVilla.GetAsync(x => x.Name == v.Name);
             if (existingVilla != null)
@@ -70,7 +73,9 @@ namespace MagicVilla.Controllers
             return CreatedAtRoute("GetVilla", new { id = model.Id }, _response);
         }
 
+        
         [HttpPut("{id:int}", Name = "UpdateVilla")]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult<APIResponse>> Put(VillaUpdateDTO v)
         {
             var existingVilla = await _dbVilla.GetAsync(x => x.Id == v.Id);
@@ -98,6 +103,7 @@ namespace MagicVilla.Controllers
 
 
         [HttpDelete("{id:int}", Name = "DeleteVilla")]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult<APIResponse>> Delete(int id)
         {
             var existingVilla = await _dbVilla.GetAsync(x => x.Id == id);
