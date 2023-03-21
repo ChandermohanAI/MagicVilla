@@ -6,25 +6,25 @@ using MagicVilla.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MagicVilla.Controllers
+namespace MagicVilla.Controllers.V1
 {
-    [Route("api/VillaAPI")]
+    [Route("api/v{version:apiVersion}/VillaAPI")]
     [ApiController]
-    public class VillaApiController : ControllerBase
+    [ApiVersion("1.0")]
+    public class VillaApiV1Controller : ControllerBase
     {
 
         protected APIResponse _response;
         private readonly IVillaRepository _dbVilla;
         private readonly IMapper _mapper;
-        public VillaApiController(IVillaRepository dbVilla,IMapper mapper){
+        public VillaApiV1Controller(IVillaRepository dbVilla,IMapper mapper){
             _dbVilla = dbVilla;
             _mapper = mapper;
             this._response = new();
         }
 
-        
+        [MapToApiVersion("1.0")]
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<APIResponse>> GetVillas(){
 
             IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
@@ -35,6 +35,7 @@ namespace MagicVilla.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetVilla")]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult<APIResponse>> GetVilla(int id){
         
             var villa = await _dbVilla.GetAsync(u=>u.Id==id);
