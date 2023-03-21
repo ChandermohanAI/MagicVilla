@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(option =>{
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IVillaRepository,VillaRepository>();
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
@@ -46,7 +47,13 @@ builder.Services.AddAuthentication(x =>
                 ValidateAudience = false
             };
 }); 
-builder.Services.AddControllers();
+builder.Services.AddControllers(option => {
+    option.CacheProfiles.Add("Default30",
+    new CacheProfile()
+    {
+        Duration = 30
+    });
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => {

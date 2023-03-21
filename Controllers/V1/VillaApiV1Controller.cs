@@ -23,8 +23,9 @@ namespace MagicVilla.Controllers.V1
             this._response = new();
         }
 
-        [MapToApiVersion("1.0")]
+        
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<ActionResult<APIResponse>> GetVillas(){
 
             IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
